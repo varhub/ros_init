@@ -1,25 +1,48 @@
 # Copyright 2014 varribas <v.arribas.urjc@gmail.com>
 
-# >>Variables<<
-# ROS develop workspace
-ROS_WS=~/ros_workspace
-ROS_PORT=11511
-ROS_MASTER_URI=http://Ubuntu14lts:$ROS_PORT/
+# >>Configuration<<
+# ROS develop workspace ($ROS_BASE_WS/<ros_version>)
+ROS_BASE_WS=~/ros_workspace
+
+# MASTER URI (explicit customize)
+ROS_HOSTNAME=localhost
+#ROS_PORT=11311
+
+
 
 # >>ROS related<<
+# Detect ros version
+ROS_DISTRO=$(find /opt/ros/ -mindepth 1  -maxdepth 1 -type d -printf "%f" -quit)
+ROS_WS=${ROS_BASE_WS}/${ROS_DISTRO}
+
+# Set ROS_MASTER_URI
+[ -z $ROS_HOSTNAME ] && ROS_HOSTNAME=localhost
+# Pseudo dynamic port (diferent by distro)
+if [ -z $ROS_PORT ]; then
+	ROS_PORT=$(( 11300 + $(printf '%d' "'$ROS_DISTRO'") - 97))
+fi
+ROS_MASTER_URI=http://$ROS_HOSTNAME:$ROS_PORT/
+
 # Move to workspace
-cd $ROS_WS
+[ -d "${ROS_WS}" ] || mkdir -p "${ROS_WS}"
+cd "$ROS_WS"
+
+# Switch user's HOME to ROS_WS to force isolation (for example: ~/.ros/log/)
+export HOME=$ROS_WS
 
 # Change ROS Core port (this allow multiple instances)
 export ROS_MASTER_URI
 
-# Load ROS environment
-source /opt/ros/fuerte/setup.sh
+# Load ROS environment (the normal invocation)
+source /opt/ros/$ROS_DISTRO/setup.sh
 
 
 # >>Graphical mode execution<<
-# This is a chroot environment, so for graphics...
-export DISPLAY=:0
+# If this is a chroot environment, DISPLAY is required
+[ -z $DISPLAY ] && export DISPLAY=:0
+
+# Solve xterm warning (Warning: Tried to connect to session manager, None of the authentication protocols specified are supported)
+unset SESSION_MANAGER
 
 # ROS core
 xterm -T "ROS core" -geometry 80x30+0+100 -e "roscore -p $ROS_PORT" &
