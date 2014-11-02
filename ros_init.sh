@@ -51,7 +51,11 @@ export ROS_MASTER_URI
 
 
 ## >>Load ROS environment (the normal invocation)<< ##
-source /opt/ros/$ROS_DISTRO/setup.sh
+if [ "$SHELL" = "/bin/bash" ]; then
+	source /opt/ros/$ROS_DISTRO/setup.bash
+else
+	source /opt/ros/$ROS_DISTRO/setup.sh
+fi
 
 
 ## >>Graphical mode execution<< ##
