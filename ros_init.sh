@@ -51,8 +51,10 @@ export ROS_MASTER_URI
 
 
 ## >>Load ROS environment (the normal invocation)<< ##
-if [ "$SHELL" = "/bin/bash" ]; then
+if [ -n "$BASH" ]; then
 	source /opt/ros/$ROS_DISTRO/setup.bash
+elif [ -n "$ZSH_NAME" ]; then
+	source /opt/ros/$ROS_DISTRO/setup.zsh
 else
 	source /opt/ros/$ROS_DISTRO/setup.sh
 fi
