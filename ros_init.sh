@@ -1,6 +1,10 @@
 # Copyright 2014 varribas <v.arribas.urjc@gmail.com>
 
-set -e
+
+set -e # exit on command error (attention: all commands must run successfully. Add "|| true" if it can fail)
+# It ensures stop and halt on a fail (for example: no ros distro)
+# Issue: halt behavior is passed on childs (unwanted)
+
 
 ## >>Configuration<< ##
 ## ROS workspaces (at $ROS_BASE_WS/<ros_version>)
@@ -69,6 +73,11 @@ fi
 # Solves xterm warning
 # Warning: Tried to connect to session manager, None of the authentication protocols specified are supported
 unset SESSION_MANAGER
+
+# revert set -e issue: force close of develop terminal on command exit != 0
+# if this happends into the main terminal, roscore and launched terminals will be
+# closed and furthermore, it shutdown chroot
+set +e
 
 # ROS core
 xterm -T "ROS core" -geometry 80x30+0+100 -e "roscore -p $ROS_PORT" &
