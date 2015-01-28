@@ -1,5 +1,7 @@
 # Copyright 2014 varribas <v.arribas.urjc@gmail.com>
 
+set -e
+
 ## >>Configuration<< ##
 ## ROS workspaces (at $ROS_BASE_WS/<ros_version>)
 # This is the full/related path that will be the root directory that
